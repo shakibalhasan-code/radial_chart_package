@@ -1,0 +1,30 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - 'v*' # Only when a new version tag is pushed
+
+jobs:
+  publish:
+    name: Publish package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Publish to pub.dev
+        env:
+          PUB_CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          echo "$PUB_CREDENTIALS" > ~/.pub-cache/credentials.json
+          flutter pub publish --force
